@@ -4,7 +4,7 @@ class App {
   //construtor
   constructor() {
     //lista de repositorios
-    this.repositorios = [];
+    this.repositorios = JSON.parse(localStorage.getItem("repositorios")) || [];
 
     //form
     this.formulario = document.querySelector("form");
@@ -14,6 +14,8 @@ class App {
 
     //metodo para registrar eventos no form
     this.registrarEventos();
+
+    this.renderizarTela();
   }
 
   registrarEventos() {
@@ -55,6 +57,8 @@ class App {
 
       // Renderizar a tela
       this.renderizarTela();
+
+      this.salvarDados();
     } catch (erro) {
       //limpar busca
       this.lista.removeChild(
@@ -72,6 +76,7 @@ class App {
         `O repositorio ${input} não existe`
       );
       li.appendChild(txtErro);
+
       this.lista.appendChild(li);
     }
   }
@@ -87,6 +92,21 @@ class App {
     this.lista.appendChild(li);
   }
 
+  salvarDados() {
+    localStorage.setItem("repositorios", JSON.stringify(this.repositorios));
+  }
+
+  removerRepositorio(repositorio) {
+    this.repositorios.splice(
+      this.repositorios.indexOf(repositorio.textContent),
+      1
+    );
+
+    this.renderizarTela();
+
+    this.salvarDados();
+  }
+
   renderizarTela() {
     //limpar lista
     this.lista.innerHTML = "";
@@ -96,6 +116,8 @@ class App {
       //li
       let li = document.createElement("li");
       li.setAttribute("class", "list-group-item list-group-item-action");
+
+      li.onclick = (evento) => this.removerRepositorio(evento);
 
       //img
       let img = document.createElement("img");
