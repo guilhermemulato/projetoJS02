@@ -32,26 +32,59 @@ class App {
       return; //return sempre sai da funcao
     }
 
-    let response = await api.get(`/repos/${input}`);
-    // console.log(response);
+    this.apresentarBuscando();
 
-    let {
-      name,
-      description,
-      html_url,
-      owner: { avatar_url },
-    } = response.data;
+    try {
+      let response = await api.get(`/repos/${input}`);
+      // console.log(response);
 
-    //Adicona o repositorio na lista
-    this.repositorios.push({
-      nome: name,
-      descricao: description,
-      avatar_url,
-      link: html_url,
-    });
+      let {
+        name,
+        description,
+        html_url,
+        owner: { avatar_url },
+      } = response.data;
 
-    // Renderizar a tela
-    this.renderizarTela();
+      //Adicona o repositorio na lista
+      this.repositorios.push({
+        nome: name,
+        descricao: description,
+        avatar_url,
+        link: html_url,
+      });
+
+      // Renderizar a tela
+      this.renderizarTela();
+    } catch (erro) {
+      //limpar busca
+      this.lista.removeChild(
+        document.querySelector(".list-group-item-warning")
+      );
+
+      let error = this.lista.querySelector(".list-group-item-danger");
+      if (error !== null) {
+        this.lista.removeChild(error);
+      }
+      //criando li
+      let li = document.createElement("li");
+      li.setAttribute("class", "list-group-item list-group-item-danger");
+      let txtErro = document.createTextNode(
+        `O repositorio ${input} não existe`
+      );
+      li.appendChild(txtErro);
+      this.lista.appendChild(li);
+    }
+  }
+
+  apresentarBuscando() {
+    //criando li
+    let li = document.createElement("li");
+    li.setAttribute("class", "list-group-item list-group-item-warning");
+    let txtBusca = document.createTextNode(
+      `Aguarde, buscando o repositorio...`
+    );
+    li.appendChild(txtBusca);
+    this.lista.appendChild(li);
   }
 
   renderizarTela() {
